@@ -29,7 +29,7 @@ def test_fails_closed_when_no_keys_configured(client: TestClient, settings) -> N
 def test_unconfigured_engine_returns_501(client: TestClient, auth) -> None:
     r = client.post(URL, json=VALID, headers=auth)
     assert r.status_code == 501
-    assert "not configured" in r.json()["detail"].lower()
+    assert "no voice engine is configured" in r.json()["detail"].lower()
     assert r.headers["content-type"].startswith("application/json")
 
 
