@@ -1,0 +1,19 @@
+# Optional image with the real XTTS-v2 engine (CPU PyTorch). Model files and voices are
+# mounted as volumes; nothing is baked into the image.
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y --no-install-recommends libsndfile1 ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /srv
+COPY requirements.txt requirements-xtts.txt ./
+RUN pip install --no-cache-dir "torch>=2.2,<2.9" "torchaudio>=2.2,<2.9" \
+        --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir -r requirements-xtts.txt
+
+COPY app ./app
+RUN useradd --create-home appuser
+USER appuser
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

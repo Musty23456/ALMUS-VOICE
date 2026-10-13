@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.xtts
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      VOICE_ENGINE: xtts_v2
+      XTTS_MODEL_DIR: /models/XTTS-v2
+      XTTS_DEVICE: cpu
+      REFERENCE_VOICE_DIR: /data/voices
+    volumes:
+      - ./models:/models:ro
+      - ./data:/data   # must be writable by the container user (uid 1000 by default)
